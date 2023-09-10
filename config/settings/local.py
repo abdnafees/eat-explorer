@@ -1,6 +1,8 @@
-'''
+"""
 SECURITY WARNING: don't run with debug turned on in production!
-'''
+"""
+# noinspection PyUnresolvedReferences
+from .base import *
 
 DEBUG = True
 ALLOWED_HOSTS = ["*"]

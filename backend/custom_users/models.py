@@ -24,18 +24,17 @@ from django.utils import timezone
 class CustomUserManager(BaseUserManager):
     """This class base function for creating a Custom User model."""
 
-    def create_user(self, validated_data):
-        if not validated_data["email"]:
-            raise ValueError("The Email field must be set")
-        if not validated_data["username"]:
+    def create_user(self, email, username, password=None):
+        if not username:
             raise ValueError("User must have a unique username.")
-        email = self.normalize_email(validated_data["email"])
+
         user = self.model(
-            email=email,
-            username=validated_data["username"],
+            email=self.normalize_email(email),
+            username=email,
         )
-        user.set_password(validated_data["password"])
-        user.save(using=self._db)
+
+        user.set_password(password)
+        user.save()
         return user
 
 
