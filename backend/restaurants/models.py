@@ -16,8 +16,33 @@ from django.db import models
 
 
 class Restaurant(models.Model):
-    name = models.CharField(max_length=255)
-    address = models.TextField()
-    cuisine = models.CharField(max_length=100)
-    price_range = models.CharField(max_length=20)
-    average_rating = models.DecimalField(max_digits=3, decimal_places=2)
+    name = models.CharField(max_length=255)  # Name of the restaurant
+    place_id = models.CharField(
+        max_length=255, unique=True
+    )  # Unique identifier for the restaurant
+    address = models.TextField()  # Address of the restaurant
+    latitude = models.DecimalField(
+        max_digits=10, decimal_places=6
+    )  # Latitude of the restaurant's location
+    longitude = models.DecimalField(
+        max_digits=10, decimal_places=6
+    )  # Longitude of the restaurant's location
+    rating = models.FloatField(
+        null=True, blank=True
+    )  # Rating of the restaurant (can be nullable)
+    user_ratings_total = models.PositiveIntegerField(
+        null=True, blank=True
+    )  # Total number of user ratings (can be nullable)
+    price_level = models.PositiveIntegerField(
+        null=True, blank=True
+    )  # Price level of the restaurant (can be nullable)
+    types = models.JSONField()  # List of restaurant types or categories
+    photo_reference = models.CharField(
+        max_length=255, null=True, blank=True
+    )  # Reference to a restaurant's photo
+    open_now = models.BooleanField(
+        default=False
+    )  # Indicates if the restaurant is open now
+
+    def __str__(self):
+        return self.name
