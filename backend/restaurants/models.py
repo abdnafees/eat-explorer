@@ -1,48 +1,46 @@
-"""'
-A model is the single, definitive source of information about your data.
-It contains the essential fields and behaviors of the data you're storing.
-Generally, each model maps to a single database table.
+from django.contrib.gis.db import models
 
-The basics:
 
-Each model is a Python class that subclasses django.db.models.Model.
-Each attribute of the model represents a database field.
-With all of this, Django gives you an automatically-generated database-access API; see Making queries.
-"""
-from django.db import models
+class Location(models.Model):
+    lat = models.DecimalField(max_digits=9, decimal_places=6)
+    lng = models.DecimalField(max_digits=9, decimal_places=6)
 
-# Create your models here.
-# restaurants/models.py
+
+class Geometry(models.Model):
+    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+
+
+class Photo(models.Model):
+    height = models.PositiveIntegerField()
+    html_attributions = models.TextField()
+    photo_reference = models.CharField(max_length=255)
+    width = models.PositiveIntegerField()
 
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=255)  # Name of the restaurant
+    geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE)
+    # Geometry information including latitude and longitude
+    icon = models.URLField()  # URL to the restaurant's icon
+    icon_background_color = models.CharField(
+        max_length=7
+    )  # Background color of the icon
+    photos = models.ManyToManyField(Photo)  # Field to store photos information
     place_id = models.CharField(
         max_length=255, unique=True
     )  # Unique identifier for the restaurant
-    address = models.TextField()  # Address of the restaurant
-    latitude = models.DecimalField(
-        max_digits=10, decimal_places=6
-    )  # Latitude of the restaurant's location
-    longitude = models.DecimalField(
-        max_digits=10, decimal_places=6
-    )  # Longitude of the restaurant's location
-    rating = models.FloatField(
-        null=True, blank=True
-    )  # Rating of the restaurant (can be nullable)
-    user_ratings_total = models.PositiveIntegerField(
-        null=True, blank=True
-    )  # Total number of user ratings (can be nullable)
-    price_level = models.PositiveIntegerField(
-        null=True, blank=True
-    )  # Price level of the restaurant (can be nullable)
-    types = models.JSONField()  # List of restaurant types or categories
-    photo_reference = models.CharField(
-        max_length=255, null=True, blank=True
-    )  # Reference to a restaurant's photo
-    open_now = models.BooleanField(
-        default=False
-    )  # Indicates if the restaurant is open now
+    rating = models.DecimalField(
+        max_digits=3, decimal_places=1
+    )  # Rating of the restaurant (decimal)
+    reference = models.CharField(max_length=255)  # Reference to the restaurant
+    types = (
+        models.JSONField()
+    )  # JSON field to store types (e.g., restaurant, food, point_of_interest)
+    user_ratings_total = models.IntegerField()  # Total user ratings for the restaurant
+    vicinity = models.TextField()  # Address or vicinity of the restaurant
+    business_status = models.CharField(
+        max_length=50
+    )  # Business status of the restaurant (e.g., OPERATIONAL)
 
     def __str__(self):
         return self.name

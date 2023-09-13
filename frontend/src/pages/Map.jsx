@@ -36,11 +36,6 @@ const Map = ({onMarkerChange}) => {
         height: '400px',
     };
 
-    // const center = {
-    //     lat: 31.5204, // Replace with your desired latitude
-    //     lng: 74.3587, // Replace with your desired longitude
-    // };
-
     return (
         <LoadScript googleMapsApiKey={apiKey}>
             <GoogleMap
