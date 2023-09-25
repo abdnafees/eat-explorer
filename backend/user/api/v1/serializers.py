@@ -3,11 +3,11 @@ This file contains Serializer class for the Custom User model.
 """
 from rest_framework import serializers
 
-from backend.custom_users.models import CustomUser
+from backend.user.api.v1.models import User
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = User
         fields = "__all__"
         extra_kwargs = {"password": {"write_only": True}}

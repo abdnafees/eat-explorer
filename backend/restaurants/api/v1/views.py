@@ -8,11 +8,11 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from backend.restaurants.models import Restaurant, Location, Geometry, Photo
-from backend.restaurants.serializers import RestaurantSerializer
+from backend.restaurants.api.v1.models import Restaurant, Location, Geometry, Photo
+from backend.restaurants.api.v1.serializers import RestaurantSerializer
 
 
-class RestaurantSearchView(CreateAPIView):
+class RestaurantCreateAPIView(CreateAPIView):
     serializer_class = RestaurantSerializer
 
     def create(self, request, *args, **kwargs):

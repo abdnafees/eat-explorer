@@ -11,7 +11,7 @@ const RestaurantCard = ({restaurant}) => {
     return (
         <div className="card mb-4">
             {/* Display photos from the backend */}
-            {restaurant.photos && restaurant.photos.length > 0 ? (
+            {restaurant?.photos.length > 0 ? (
                 <img src={anchorTag.href} className="card-img-top" alt={restaurant.name} crossOrigin="anonymous"/>
             ) : (
                 <div className="no-photo-placeholder">

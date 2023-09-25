@@ -18,7 +18,7 @@ class Photo(models.Model):
 
 
 class Restaurant(models.Model):
-    name = models.CharField(max_length=255)  # Name of the restaurant
+    name = models.CharField(max_length=255, unique=True)  # Name of the restaurant
     geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE)
     # Geometry information including latitude and longitude
     icon = models.URLField()  # URL to the restaurant's icon

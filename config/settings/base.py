@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "backend",
-    "backend.custom_users",
+    "backend.user",
     "backend.restaurants",
 ]
 
@@ -78,7 +78,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
-AUTH_USER_MODEL = "custom_users.CustomUser"
+AUTH_USER_MODEL = "user.CustomUser"
 
 ROOT_URLCONF = "config.urls"
 

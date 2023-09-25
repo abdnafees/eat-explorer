@@ -1,3 +1,4 @@
+from backend.custom_users.models import CustomUser
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -5,17 +6,11 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 
-from backend.custom_users.models import CustomUser
 
-
-class UserCreationForm(forms.ModelForm):
+class UserCreateForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
 
-    # username = forms.CharField(label="Username", widget=forms.TextInput)
-    # email = forms.CharField(label="Email", widget=forms.EmailInput)
-    # first_name = forms.CharField(label="First Name", widget=forms.TextInput)
-    # last_name = forms.CharField(label="Last Name", widget=forms.TextInput)
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
         label="Password confirmation", widget=forms.PasswordInput
@@ -50,7 +45,7 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
-class UserChangeForm(forms.ModelForm):
+class UserUpdateForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
     disabled password hash display field.

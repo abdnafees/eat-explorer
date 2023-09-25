@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.restaurants.models import Restaurant, Location, Photo, Geometry
+from backend.restaurants.api.v1.models import Restaurant, Location, Photo, Geometry
 
 
 class PhotoSerializer(serializers.ModelSerializer):

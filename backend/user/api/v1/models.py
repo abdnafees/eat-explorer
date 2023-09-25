@@ -1,4 +1,4 @@
-"""'
+"""
 A model is the single, definitive source of information about your data.
 It contains the essential fields and behaviors of the data you're storing.
 Generally, each model maps to a single database table.
@@ -12,44 +12,18 @@ With all of this, Django gives you an automatically-generated database-access AP
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    BaseUserManager,
     PermissionsMixin,
 )
 from django.db import models
 from django.utils import timezone
 
+from backend.user.api.v1.managers import UserManager
+
+
 # Create your models here in models.py in your app
 
 
-class CustomUserManager(BaseUserManager):
-    """This class base function for creating a Custom User model."""
-
-    def create_user(self, email, username, password=None):
-        if not username:
-            raise ValueError("User must have a unique username.")
-
-        user = self.model(email=self.normalize_email(email), username=username)
-
-        user.set_password(password)
-        user.save()
-        return user
-
-    def create_superuser(self, email, username, password=None):
-        """
-        Creates and saves a superuser with the given email, username and password.
-        """
-        user = self.create_user(
-            email=email,
-            username=username,
-            password=password,
-        )
-        user.is_admin = True
-        user.is_superuser = True
-        user.save(using=self._db)
-        return user
-
-
-class CustomUser(PermissionsMixin, AbstractBaseUser):
+class User(PermissionsMixin, AbstractBaseUser):
     """This class defines fields for CustomUser model."""
 
     email = models.EmailField(unique=True)
@@ -63,7 +37,7 @@ class CustomUser(PermissionsMixin, AbstractBaseUser):
 
     # Add your custom fields here as needed
 
-    objects = CustomUserManager()
+    objects = UserManager()
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
@@ -80,6 +54,6 @@ class CustomUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def is_staff(self):
-        "Is the user a member of staff?"
+        # "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
