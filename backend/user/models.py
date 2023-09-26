@@ -20,9 +20,6 @@ from django.utils import timezone
 from backend.user.api.v1.managers import UserManager
 
 
-# Create your models here in models.py in your app
-
-
 class User(PermissionsMixin, AbstractBaseUser):
     """This class defines fields for CustomUser model."""
 

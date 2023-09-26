@@ -1,6 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-
 function Pagination({prevPage, nextPage, onPageChange}) {
     const handlePrevPage = () => {
         onPageChange(prevPage);

@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 const RestaurantCard = ({restaurant}) => {
 
     const tempDiv = document.createElement('div');

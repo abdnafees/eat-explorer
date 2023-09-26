@@ -2,6 +2,7 @@ import './App.css';
 import Map from "./pages/Map.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {useState} from "react";
+import urls from "./urls.jsx";
 import Header from "./components/Header.jsx";
 import InputForm from "./components/InputForm.jsx";
 import RestaurantList from "./components/RestaurantList.jsx";
@@ -10,11 +11,7 @@ import PrivacyAlert from "./components/PrivacyAlert.jsx";
 
 function App() {
 
-    const username = 'test1';
-    const password = 'test123';
-
     // Encode the username and password in Base64 format
-    const base64Credentials = btoa(`${username}:${password}`);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [keywords, setKeywords] = useState(''); // Add keywords state
@@ -24,6 +21,7 @@ function App() {
     const [prevPage, setPrevPage] = useState(null);
     const [count, setCount] = useState(0);
     const [searchClicked, setSearchClicked] = useState(false);
+    const radiusInMeters = radiusInKilometers * 1000;
 
     // Function to handle latitude and longitude updates from the map component
     const handleMapMarkerChange = ({lat, lng}) => {
@@ -50,7 +48,7 @@ function App() {
     const handleSearchClick = () => {
         setSearchClicked(true);
         // Now, trigger fetching restaurant data in the RestaurantList component
-        searchRestaurants();
+        fetchRestaurants();
     };
 
     // Function to handle page changes
@@ -58,41 +56,14 @@ function App() {
         // Extract the page number from the pageUrl (e.g., 'http://localhost:8000/api/restaurants/details/?page=2')
         const pageNumber = getPageNumberFromUrl(pageUrl);
 
-        if (pageNumber !== null) {
+        if (pageNumber) {
             // Call the fetchRestaurants function with the page number
-            fetchRestaurants(`http://localhost:8000/api/restaurants/details/?page=${pageNumber}`);
+            fetchRestaurants(`${urls.apiURL}?page=${pageNumber}`);
         }
     };
-    const radiusInMeters = radiusInKilometers * 1000;
-    // Function to send a POST request for searching restaurants
-    const searchRestaurants = () => {
-        const apiUrl = "http://localhost:8000/api/restaurants/search/";
 
-
-        // Send a POST request to search for restaurants
-        fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                // 'Authorization': `Basic ${base64Credentials}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({latitude, longitude, keywords, radiusInMeters}),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                fetchRestaurants();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    };
     const fetchRestaurants = (pageUrl = null) => {
-        let apiUrl = "http://localhost:8000/api/restaurants/details/";
+        let apiUrl = urls.apiURL;
         if (pageUrl) {
             apiUrl = pageUrl;
         }

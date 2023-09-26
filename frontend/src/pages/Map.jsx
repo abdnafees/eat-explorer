@@ -11,6 +11,11 @@ const Map = ({onMarkerChange}) => {
         lng: 74.3587
     });
 
+    const containerStyle = {
+        width: '100%',
+        height: '400px',
+    };
+
     useEffect(() => {
         // Use the browser's geolocation to get the user's current position
         if (navigator.geolocation) {
@@ -31,10 +36,6 @@ const Map = ({onMarkerChange}) => {
             console.error('Geolocation is not supported by this browser.');
         }
     }, [onMarkerChange]);
-    const containerStyle = {
-        width: '100%',
-        height: '400px',
-    };
 
     return (
         <LoadScript googleMapsApiKey={apiKey}>
@@ -46,7 +47,7 @@ const Map = ({onMarkerChange}) => {
                 {currentPosition && (
                     <Marker
                         position={currentPosition}
-                        icon={"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"}
+                        icon={"frontend/public/beachflag.png"}
                         draggable={true}
                         onDragEnd={({latLng}) => {
                             const lat = latLng.lat();

@@ -130,5 +130,6 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 
-data/*
 .DS_Store
+
+config/local.py

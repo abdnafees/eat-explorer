@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 const PrivacyAlert = () => {
     return (
         <div className="alert alert-info" role="alert">

@@ -4,10 +4,10 @@ This file contains URL endpoints for Restaurants app.
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from backend.restaurants.api.v1.views import RestaurantSearchView
+from backend.restaurants.api.v1.views import RestaurantListAPIView
 
 urlpatterns = [
-    path("", RestaurantSearchView.as_view()),
+    path("", RestaurantListAPIView.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

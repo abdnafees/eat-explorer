@@ -1,108 +1,16 @@
 # Create your views here.
-import googlemaps
-from decouple import config  # Import config from decouple to read environment variables
+
 from django.db.models import Q
 from rest_framework import filters
-from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 
-from backend.restaurants.api.v1.models import Restaurant, Location, Geometry, Photo
+from backend.restaurants.api.v1.models import Restaurant
+from backend.restaurants.api.v1.paginations import CustomPagination
 from backend.restaurants.api.v1.serializers import RestaurantSerializer
+from backend.restaurants.api.v1.utils import create_restaurants
 
 
-class RestaurantCreateAPIView(CreateAPIView):
-    serializer_class = RestaurantSerializer
-
-    def create(self, request, *args, **kwargs):
-        # Get the data from the request
-        data = request.data
-        latitude = float(data.get("latitude"))
-        longitude = float(data.get("longitude"))
-        keywords = data.get("keywords")
-        radius = int(data.get("radiusInMeters"))  # In meters
-
-        # Load your Maps API key from the .env file
-        maps_api_key = config(
-            "GOOGLE_MAPS_API_KEY"
-        )  # Define MAPS_API_KEY in your .env file
-
-        gmaps = googlemaps.Client(key=maps_api_key)
-
-        # Perform a Nearby Search using the Places API
-        location = (latitude, longitude)
-        places_result = gmaps.places_nearby(
-            location=location, radius=radius, keyword=keywords, language="en"
-        )
-
-        if places_result["status"] == "OK":
-            # Successfully retrieved results
-            results = places_result["results"]
-            # Parse and save restaurant data
-            for result in results:
-                # Create Location instance
-                location_data = {
-                    "lat": result.get("geometry", {}).get("location", {}).get("lat"),
-                    "lng": result.get("geometry", {}).get("location", {}).get("lng"),
-                }
-                location_instance = Location.objects.create(**location_data)
-
-                # Create Geometry instance and associate it with Location
-                geometry_instance = Geometry.objects.create(location=location_instance)
-
-                # Create Photo instances and associate them with the Restaurant
-                photos_data = [
-                    {
-                        "height": photo.get("height"),
-                        "html_attributions": photo.get("html_attributions"),
-                        "photo_reference": photo.get("photo_reference"),
-                        "width": photo.get("width"),
-                    }
-                    for photo in result.get("photos", [])
-                ]
-                photos_instances = Photo.objects.bulk_create(
-                    [Photo(**photo_data) for photo_data in photos_data]
-                )
-                restaurant_data = {
-                    "name": result.get("name"),
-                    "business_status": result.get("business_status"),
-                    "geometry": geometry_instance,
-                    "icon": result.get("icon"),
-                    "icon_background_color": result.get("icon_background_color"),
-                    "rating": result.get("rating"),
-                    "place_id": result.get("place_id"),
-                    "vicinity": result.get("vicinity"),
-                    "types": result.get("types"),
-                    "user_ratings_total": result.get("user_ratings_total"),
-                }
-
-                # Create or update the Restaurant instance
-                restaurant, created = Restaurant.objects.update_or_create(
-                    place_id=restaurant_data["place_id"], defaults=restaurant_data
-                )
-                # Associate photos with the Restaurant
-                restaurant.photos.set(photos_instances)
-            return Response(
-                {
-                    "message": "Restaurants data saved successfully",
-                },
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            return Response(
-                {"error": "Invalid request to Places API"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
-class CustomPagination(PageNumberPagination):
-    page_size = 9  # Adjust the page size as needed
-    page_size_query_param = "page_size"
-    max_page_size = 100  # Set the maximum page size if desired
-
-
-class RestaurantDetailsView(ListAPIView):
+class RestaurantListAPIView(ListAPIView):
     serializer_class = RestaurantSerializer
     pagination_class = CustomPagination  # Use the custom pagination class
 
@@ -138,13 +46,18 @@ class RestaurantDetailsView(ListAPIView):
 
     def get_queryset(self):
         # Retrieve the user-provided search parameters from the request
+        query_params = RestaurantSerializer(data=self.request.query_params)
+        query_params.is_valid(raise_exception=True)
         keywords = self.request.query_params.get("keywords", "")
         latitude = self.request.query_params.get("latitude", None)
         longitude = self.request.query_params.get("longitude", None)
         radius = self.request.query_params.get("radiusInMeters", None)
 
-        # Create a queryset that includes keyword and location filtering
-        queryset = Restaurant.objects.all()
+        restaurants = create_restaurants(latitude, longitude, radius, keywords)
+
+        # Create a queryset that includes keyword filtering
+        if restaurants["status"] == 201:
+            queryset = Restaurant.objects.all()
 
         # Apply keyword filtering
         if keywords:
@@ -153,22 +66,6 @@ class RestaurantDetailsView(ListAPIView):
                 Q(name__icontains=keywords)
                 | Q(vicinity__icontains=keywords)
                 | Q(types__icontains=keywords)
-            )
-
-        # Apply location filtering if latitude, longitude, and radius are provided
-        if latitude is not None and longitude is not None and radius is not None:
-            # Create a point representing the user's location
-            queryset = queryset.filter(
-                geometry__location__lat__range=(
-                    float(latitude)
-                    - (float(radius) / 1000),  # Convert radius to kilometers
-                    float(latitude) + (float(radius) / 1000),
-                ),
-                geometry__location__lng__range=(
-                    float(longitude)
-                    - (float(radius) / 1000),  # Convert radius to kilometers
-                    float(longitude) + (float(radius) / 1000),
-                ),
             )
 
         # Adjust the queryset based on your filtering or ordering requirements

@@ -74,11 +74,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
-
-AUTH_USER_MODEL = "user.CustomUser"
+AUTH_USER_MODEL = "user.User"
 
 ROOT_URLCONF = "config.urls"
 

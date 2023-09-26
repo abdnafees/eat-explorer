@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 function InputForm({keywords, radiusInKilometers, handleKeywordsChange, handleRadiusChange, onSearch}) {
     return (
         <div className="input-group mb-3">

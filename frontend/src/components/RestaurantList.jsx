@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import RestaurantCard from "./RestaurantCard.jsx";
 
 function RestaurantList({restaurants}) {

@@ -4,8 +4,8 @@ from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from backend.user.api.v1.models import User
 from backend.user.api.v1.serializers import UserSerializer
+from backend.user.models import User
 
 
 class UserCreateAPIView(CreateAPIView):
