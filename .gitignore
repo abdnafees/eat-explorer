@@ -132,4 +132,4 @@ GitHub.sublime-settings
 
 .DS_Store
 
-config/local.py
+eat_explorer/settings/local.py
